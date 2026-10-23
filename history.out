@@ -1,0 +1,105 @@
+    1  echo "export PROMT_COMMAND='history -a'" >> /root/.bashrc
+    2  source /root/.bashrc
+    3  nmcli dev status
+    4  ip a
+    5  nmcli con add type ethernet ifname enp0s3 con-name dhcp0 ipv4.method auto
+    6  nmcli con up dhcp0
+    7  getenforce
+    8  hostnamectl set-hostname mephi-2026.domain.local
+    9  hostname -f
+   10  ping -c 4 8.8.8.8 > ping.out
+   11  cat ping.out
+   12  dnf update -y
+   13  dnf install -y nginx libcap-ng-utils dnf-plugins-core
+   14  dnf download --resolve tcpdump --destdir=/tmp
+   15  ls -l /tmp/*.rpm
+   16  rpm -ivh /tmp/tcpdump-*.rpm
+   17  rpm -q tcpdump
+   18  dnf history > dnf.out
+   19  cat dnf.out
+   20  lsblk
+   21  parted /dev/sdb mklabel gpt
+   22  cat /etc/fstab
+   23  parted /dev/sdb mkpart primary ext4 0% 100%
+   24  lsblk
+   25  mkfs.ext4 -L MEPHI_WEB /dev/sdb1
+   26  blkid /dev/sdb1
+   27  mkdir -p /mephi-web
+   28  echo 'LABEL=MEPHI_WEB /mephi-web ext4 defaults 0 2' >> /etc/fstab
+   29  mount -a
+   30  systemctl daemon-reload
+   31  mount -a
+   32  findmnt /mephi-web
+   33  mount -L MEPHI_WEB /mephi-web
+   34  clear
+   35  systemctl enable --now nginx
+   36  systemctl status nginx
+   37  ss -tlnp | grep nginx
+   38  systemctl is-enabled nginx
+   39  journalctl -u nginx -b > journalctl.out
+   40  cat journalctl.out
+   41  history -d 41-43
+   42  clear
+   43  groups
+   44  groupadd -g 4444 curators
+   45  groupadd developers
+   46  useradd -u 5501 -m user1
+   47  useradd -u 5502 -m user2
+   48  useradd -u 5503 -m user3
+   49  useradd -m curator1
+   50  useradd -m curator2
+   51  usermod -aG curators curator1
+   52  usermod -aG curators curator2
+   53  for u in user1 user2 user3; do usermod -aG developers "$u"; done
+   54  groups
+   55  groups user1
+   56  groups user2
+   57  groups user3
+   58  mkdir -p /data/mephi-2026
+   59  chgrp developers /data/mephi-2026
+   60  chmod 2770 /data/mephi-2026
+   61  setfacl -m g:curators:r-x /data/mephi-2026
+   62  setfacl -m d:g:curators:r-x /data/mephi-2026
+   63  setfacl -m d:g::rwx /data/mephi-2026
+   64  setfacl -m d:o::--- /data/mephi-2026
+   65  getfacl /data/mephi-2026
+   66  ls -ld /data/mephi-2026/
+   67  sudo -u user1 bash -c 'echo "test from user1" > /data/mephi-2026/test1.txt'
+   68  sudo -u user2 bash -c 'echo "user2 was here" >> /data/mephi-2026/test1.txt'
+   69  sudo -u user2 cat /data/mephi-2026/test1.txt
+   70  sudo -u curator1 cat /data/mephi-2026/test1.txt 
+   71  sudo -u curator1 bash -c 'echo hack >> /data/mephi-2026/test1.txt'
+   72  sudo -u nobody cat /data/mephi-2026/test1.txt
+   73  getfacl /data/mephi-2026/test1.txt 
+   74  rm /data/mephi-2026/test1.txt 
+   75  which tcpdump
+   76  ls -l /sbin/tcpdump
+   77  getcap /sbin/tcpdump
+   78  setcap cap_net_raw+ep /sbin/tcpdump
+   79  getcap /sbin/tcpdump
+   80  nmcli dev status
+   81  sudo -u user1 tcpdump -i enp0s3 -c 3
+   82  sudo -u user1 tcpdump
+   83  getenforce
+   84  cat /etc/selinux/config 
+   85  semanage fcontext -a -t httpd_sys_content_t "/mephi-web(/.*)?"
+   86  restorecon -Rv /mephi-web
+   87  ls -Z /mephi-web
+   88  vi /etc/nginx/nginx.conf
+   89  nginx -t
+   90  systemctl restart nginx
+   91  echo "Hello from Student: 372457" > /mephi-web/index.html
+   92  curl http://localhost/
+   93  authselect current
+   94  authselect enable-feature with-pamaccess
+   95  echo '- : (curators) : LOCAL' >> /etc/security/access.conf 
+   96  tail -3 /etc/security/access.conf 
+   97  for u in user1 user2 user3 curator1 curator2; do chage -M 90 $u; done
+   98  sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 90/' /etc/login.defs 
+   99  sed -i 's/^#\s*minlen.*/minlen = 12/' /etc/security/pwquality.conf
+  100  su - user1
+  101  curl -s http://localhost/
+  102  clear
+  103  history -d 103-105
+  104  clear
+  105  history > ~/history.out
